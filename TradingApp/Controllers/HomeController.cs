@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TradingApp.DataAccess;
 using TradingApp.Infrastructure.TradingAppHandler;
 using TradingApp.Models;
@@ -20,23 +21,32 @@ namespace TradingApp.Controllers
             dbContext = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(String symbol,String range)
         {
-            //Input: User logged In?, Chart Range, Chart Parameters
+            //Input: User logged In?, Chart Range, Chart Parameters, Company Symbol
             //Output: Chart Data, Stock List, Top stocks, ButtonName-{Sign In, Account}
+            //ViewData["symbol"] = "aapl";
+            
+            //String symbol = ViewData["symbol"].ToString();
+            if(range == null){
+                range = "1d";
+            }
+            if(symbol == null)
+            {
+                symbol = "a";
+            }
 
-            String symbol = "aapl";
+
             ViewBag.dbSuccessChart = 0;
             List<Stock> Stocks = new List<Stock>();
             if (symbol != null)
             {
                 IEXHandler webHandler = new IEXHandler();
-                Stocks = webHandler.GetChart(symbol);
+                Stocks = webHandler.GetChart(symbol,range);
                 Stocks = Stocks.OrderBy(c => c.date).ToList(); //Make sure the data is in ascending order of date.
             }
 
             CompaniesStocks companiesStocks = getCompaniesStocksModel(Stocks);
-
             return View(companiesStocks);
             //return View();
         }

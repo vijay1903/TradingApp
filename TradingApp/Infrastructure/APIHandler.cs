@@ -10,7 +10,7 @@ namespace TradingApp.Infrastructure.TradingAppHandler
 {
     public class IEXHandler
     {
-        static string BASE_URL = "https://api.TradingApp.com/1.0/"; //This is the base URL, method specific URL is appended to this.
+        static string BASE_URL = "https://api.iextrading.com/1.0/"; //This is the base URL, method specific URL is appended to this.
         HttpClient httpClient;
 
         public IEXHandler()
@@ -48,13 +48,13 @@ namespace TradingApp.Infrastructure.TradingAppHandler
         /****
          * Calls the IEX stock API to get 1 year's chart for the supplied symbol. 
         ****/
-        public List<Stock> GetChart(string symbol)
+        public List<Stock> GetChart(string symbol, string range)
         {
-            //Using the format method.
-            //string TradingApp_API_PATH = BASE_URL + "stock/{0}/batch?types=chart&range=1y";
-            //TradingApp_API_PATH = string.Format(TradingApp_API_PATH, symbol);
+            // Using the format method.
+            // string TradingApp_API_PATH = BASE_URL + "stock/{0}/batch?types=chart&range=1y";
+            // TradingApp_API_PATH = string.Format(TradingApp_API_PATH, symbol);
 
-            string TradingApp_API_PATH = BASE_URL + "stock/" + symbol + "/batch?types=chart&range=1y";
+            string TradingApp_API_PATH = BASE_URL + "stock/" + symbol + "/batch?types=chart&range="+range;
 
             string charts = "";
             List<Stock> Stocks = new List<Stock>();

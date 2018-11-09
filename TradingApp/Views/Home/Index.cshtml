@@ -1,65 +1,99 @@
-﻿@{
+﻿@model TradingApp.Models.ViewModal.CompaniesStocks
+
+@{
     ViewData["Title"] = "Home";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div id="home_chart" class="col-md-8">
         <!--Stock chart-->
-        <canvas id="StockChart" height="500" width="800"></canvas>
+        <canvas id="homeChart" height="500" width="880"></canvas>
     </div>
+    @ViewData["symbol"]
+    @ViewData["range"]
+    @ViewData["user"]
+    @ViewData["options"]
     <div id="chart_options" class="col-md-2">
-        <select id="chart_range">
+        <select id="chart_range" style="width:100%; margin:10px" onchange="location.href = '/Home/Index?range=' + $('#chart_range').val()">
             <!-- Date Range of stocks for chart -->
-            <option>Option</option>
+            <option value="dynamic" selected>Dynamic</option>
+            <option value="1d">1 Day</option>
+            <option value="1m">1 Month</option>
+            <option value="3m">3 Months</option>
+            <option value="6m">6 Months</option>
+            <option value="ytd">Year to date</option>
+            <option value="1y">1 Year</option>
+            <option value="2y">2 Years</option>
+            <option value="5y">5 Years</option>
+            <option value="">All</option>
         </select>
-        <select id="chart_properties" multiple>
+        <select id="chart_properties" style="width:100%; margin:10px" size="5" multiple>
             <!--Stock properties to show on chart
     Price, Open, Close(default), High, Low, Volume(default)-->
-            <option>Option</option>
+            <option value="open">Open</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+            <option value="close" selected>Close</option>
+            <option value="volume" selected>Volume</option>
+            <option value="change">Change</option>
+            <option value="changePercent">Percentage Change</option>
+            <option value="changeOverTime">Change Over Time</option>
         </select>
         <table class="table">
             <!-- Stock Information -->
             <tr>
-                Company : Company
+                <td>Company Name: </td>
+                <td>@Model.Companies.First().name</td>
+            </tr>
+            <tr>
+                <td>Exchange: </td>
+                <td>@Model.Companies.First().date</td>
+            </tr>
+            <tr>
+                <td>Website: </td>
+                <td>@Model.Companies.First().symbol</td>
             </tr>
         </table>
     </div>
     <div id="live" class="col-md-2">
-        <label>
-            Recommended Top 5 to buy
-        </label>
-        <ul>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-        </ul>
-        <label>
-            Recommended Top 5 to sell
-        </label>
-        <ul>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-        </ul>
-        <label>
-            Other stocks
-        </label>
-        <ul>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-            <li>Stock</li>
-        </ul>
+        <div id="userOnly" style="display:none;">
+            <label>
+                Recommended Top 5 to buy
+            </label>
+            <ul>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+            </ul>
+            <label>
+                Recommended Top 5 to sell
+            </label>
+            <ul>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+                <li>Stock</li>
+            </ul>
+        </div>
+        
+        <div style="height:80vh; overflow:auto">
+            <label>
+                Other stocks
+            </label>
+            <div class="list-group" size="10">
+                @foreach (var company in Model.Companies)
+                {
+                    <button type="button" class="list-group-item" onclick="location.href='/Home/Index?symbol=@company.symbol'"> @company.symbol - @company.name</button>
+                }
+            </div>
+        </div>
+        
     </div>
 </div>
 <script>
-     createChart("@Model.Dates", "@Model.Prices", "@Model.Volumes", @Model.AvgPrice, @Model.AvgVolume);
+    //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
+     createChart("homeChart","@Model.Dates", ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
 </script>
