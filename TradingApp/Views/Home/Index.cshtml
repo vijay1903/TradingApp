@@ -7,16 +7,13 @@
 <div class="container-fluid">
     <div id="home_chart" class="col-md-8">
         <!--Stock chart-->
+        <br />
         <canvas id="homeChart" height="500" width="880"></canvas>
     </div>
-    @ViewData["symbol"]
-    @ViewData["range"]
-    @ViewData["user"]
-    @ViewData["options"]
     <div id="chart_options" class="col-md-2">
-        <select id="chart_range" style="width:100%; margin:10px" onchange="location.href = '/Home/Index?range=' + $('#chart_range').val()">
+        <select id="chart_range" style="width:100%; margin:10px" onchange='changeChart("@ViewData["Symbol"]")'>
             <!-- Date Range of stocks for chart -->
-            <option value="dynamic" selected>Dynamic</option>
+            @*<option value="dynamic">Dynamic</option>*@
             <option value="1d">1 Day</option>
             <option value="1m">1 Month</option>
             <option value="3m">3 Months</option>
@@ -27,10 +24,10 @@
             <option value="5y">5 Years</option>
             <option value="">All</option>
         </select>
-        <select id="chart_properties" style="width:100%; margin:10px" size="5" multiple>
+        @*<select id="chart_properties" style="width:100%; margin:10px" size="5" multiple>*@
             <!--Stock properties to show on chart
     Price, Open, Close(default), High, Low, Volume(default)-->
-            <option value="open">Open</option>
+            @*<option value="open">Open</option>
             <option value="high">High</option>
             <option value="low">Low</option>
             <option value="close" selected>Close</option>
@@ -38,20 +35,24 @@
             <option value="change">Change</option>
             <option value="changePercent">Percentage Change</option>
             <option value="changeOverTime">Change Over Time</option>
-        </select>
+        </select>*@
         <table class="table">
             <!-- Stock Information -->
             <tr>
+                <td>Company Symbol: </td>
+                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).symbol</td>
+            </tr>
+            <tr>
                 <td>Company Name: </td>
-                <td>@Model.Companies.First().name</td>
+                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).name</td>
             </tr>
             <tr>
-                <td>Exchange: </td>
-                <td>@Model.Companies.First().date</td>
+                <td>Type: </td>
+                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).type</td>
             </tr>
             <tr>
-                <td>Website: </td>
-                <td>@Model.Companies.First().symbol</td>
+                <td>IEX Id: </td>
+                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).iexId</td>
             </tr>
         </table>
     </div>
@@ -86,7 +87,7 @@
             <div class="list-group" size="10">
                 @foreach (var company in Model.Companies)
                 {
-                    <button type="button" class="list-group-item" onclick="location.href='/Home/Index?symbol=@company.symbol'"> @company.symbol - @company.name</button>
+                    <button type="button" class="list-group-item" onclick='changeChart("@company.symbol")'> @company.symbol - @company.name</button>
                 }
             </div>
         </div>
@@ -97,3 +98,4 @@
     //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
      createChart("homeChart","@Model.Dates", ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
 </script>
+<script src="~/js/JavaScript.js"></script>

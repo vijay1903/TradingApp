@@ -29,14 +29,17 @@ namespace TradingApp.Controllers
             
             //String symbol = ViewData["symbol"].ToString();
             if(range == null){
-                range = "1d";
+                range = "1y";
+               
             }
             if(symbol == null)
             {
-                symbol = "a";
+                symbol = "A";
+                
             }
 
-
+            ViewData["range"] = range;
+            ViewData["symbol"] = symbol;
             ViewBag.dbSuccessChart = 0;
             List<Stock> Stocks = new List<Stock>();
             if (symbol != null)
