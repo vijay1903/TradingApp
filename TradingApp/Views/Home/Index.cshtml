@@ -106,6 +106,6 @@
 </div>
 <script>
     //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
-     createChart("homeChart","@Model.Dates", ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
+     createChart("homeChart",["@Model.Dates"], ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
 </script>
 <script src="~/js/JavaScript.js"></script>

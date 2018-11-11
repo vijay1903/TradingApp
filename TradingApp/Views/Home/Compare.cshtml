@@ -8,28 +8,39 @@
         <canvas id="compareChart" height="500" width="800"></canvas>
     </div>
     <div class="col-md-4">
-        <div>
-            @*<select class="list-group">
-            <option value="open">Open</option>
-            <option value="high">High</option>
-            <option value="low">Low</option>
-            <option value="close" selected>Close</option>
-            <option value="volume" selected>Volume</option>
-            <option value="change">Change</option>
-            <option value="changePercent">Percentage Change</option>
-            <option value="changeOverTime">Change Over Time</option>
-        </select>*@
+        <form asp-controller="Home" asp-action="Compare" method="get">
+                <select name="symbols" class="list-group" multiple size="10" style="width:100%">
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option class="list-group-item" value="@company.symbol"> @company.symbol - @company.name</option>
+                    }
+                </select>
+                <select name="parameter" class="list-group">
+                    <option value="open">Open</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                    <option value="close" selected>Close</option>
+                    <option value="volume">Volume</option>
+                    <option value="change">Change</option>
+                    <option value="changePercent">Percentage Change</option>
+                    <option value="changeOverTime">Change Over Time</option>
+                </select>
+                <select name="range">
+                    <!-- Date Range of stocks for chart -->
+                    @*<option value="dynamic">Dynamic</option>*@
+                    <option value="1d">1 Day</option>
+                    <option value="1m">1 Month</option>
+                    <option value="3m" selected>3 Months</option>
+                    <option value="6m">6 Months</option>
+                    <option value="ytd">Year to date</option>
+                    <option value="1y">1 Year</option>
+                    <option value="2y">2 Years</option>
+                    <option value="5y">5 Years</option>s
+                    <option value="">All</option>
+                </select>
+                <button class="btn btn-block" type="submit">Compare</button>
+            </form>
         </div>
-        <div style="height:80vh; overflow:auto">
-            <select class="list-group" multiple size="15">
-                @foreach (var company in Model.Companies)
-                {
-                    <option class="list-group-item" value="@company.symbol"> @company.symbol - @company.name</option>
-                }
-            </select>
-            <button>Compare</button>
-        </div>
-    </div>
 </div>
 <script>
     var dates = [];

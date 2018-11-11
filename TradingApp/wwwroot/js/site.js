@@ -37,32 +37,41 @@ function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
     var ctx = document.getElementById(id).getContext('2d');
     var ydatasets = [];
     var yannotations = [];
-    var borderColors = ['rgba(0, 255, 0, 1)', 'rgba(255, 0, 0, 1)'];
-    var bgColor = ['rgba(0, 255, 0, 0.1)', 'rgba(255, 0, 0, 0.1)']
+    var borderColors = ['rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'];
+    var bgColor = ['rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)']
     for (var i = 0; i < ylabels.length; i++) {
-        //for (var j = 0; j < xlabels.length; j++) {
-            ydatasets.push({
-                label: ylabels[i],
-                data: ydatas[i].split(","),
-                type: (ylabels[i] != 'Volumes') ? 'line' : 'bar',
-                borderColor: borderColors[i],
-                backgroundColor: bgColor[i],
-                lineTension: 0
-            });
-            yannotations.push({
-                type: 'line',
-                mode: 'horizontal',
-                scaleID: 'H',
-                value: cdataavgs[i],
-                borderColor: 'green',
-                borderWidth: 1,
-                label: {
-                    backgroundColor: "green",
-                    content: "Mean: $" + cdataavgs[i],
-                    enabled: true
-                }
-            });
-        //}
+        ydatasets.push({
+            label: ylabels[i],
+            fill: false,
+            data: ydatas[i].split(","),
+            type: (ylabels[i] != 'Volumes') ? 'line' : 'bar',
+            borderColor: borderColors[i],
+            backgroundColor: bgColor[i],
+            lineTension: 0
+        });
+        yannotations.push({
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'H',
+            value: cdataavgs[i],
+            borderColor: 'green',
+            borderWidth: 1,
+            label: {
+                backgroundColor: "green",
+                content: "Mean: $" + cdataavgs[i],
+                enabled: true
+            }
+        });
     }
     var myChart = new Chart(ctx, {
         type: 'bar',

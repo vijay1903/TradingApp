@@ -78,37 +78,21 @@ namespace TradingApp.Infrastructure.TradingAppHandler
             return Stocks;
         }
         
-        public List<Stock[]> GetCharts(List<string> symbols, string range)
+        public Information GetInfo(string symbol)
         {
-            if (symbols.Count == 0)
-            {
-                symbols.Add("A");
-                symbols.Add("AAPL");
-            }
-        // https://api.iextrading.com/1.0/stock/market/batch?symbols=aapl,fb&types=chart&range=1m&last=5
-            string TradingApp_API_PATH = BASE_URL + "stock/market/batch?symbols=A,AAPL&types=chart&range=" + range;
-
-            string charts = "";
-            List<Stock[]> Stocks = null;
-            httpClient.BaseAddress = new Uri(TradingApp_API_PATH);
-            HttpResponseMessage response = httpClient.GetAsync(TradingApp_API_PATH).GetAwaiter().GetResult();
+            string api = BASE_URL + "/stock/" + symbol + "/company";
+            string info = "";
+            httpClient.BaseAddress = new Uri(api);
+            HttpResponseMessage response = httpClient.GetAsync(api).GetAwaiter().GetResult();
             if (response.IsSuccessStatusCode)
             {
-                charts = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                info = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }
-            charts = "[" + charts + "]";
-            if (!charts.Equals(""))
+            if (!info.Equals(""))
             {
-                List<Stock[]> root = JsonConvert.DeserializeObject<List<Stock[]>>(charts, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                Stocks = root;
+                return(JsonConvert.DeserializeObject<Information>(info));
             }
-            //make sure to add the symbol the chart
-            //foreach (Stock Stock in Stocks)
-            //{
-            //    Stock.symbol = symbols[0];
-            //}
-
-            return Stocks;
+            return null;
         }
     }
 }

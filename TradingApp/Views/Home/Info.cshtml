@@ -1,21 +1,40 @@
-﻿@{
+﻿@model TradingApp.Models.CompanyInfo
+@{
     ViewData["Title"] = "Stock Info";
 }
 
 <div class="container">
     <div class="col-md-8">
-        Information of Stock
+        <h3>Information of Stock</h3>
+        <label>Symbol</label>
+        <p>@Model.Info.Symbol</p>
+        <label>Company Name</label>
+        <p>@Model.Info.CompanyName</p>
+        <label>Exchange</label>
+        <p>@Model.Info.Exchange</p>
+        <label>Industry</label>
+        <p>@Model.Info.Industry</p>
+        <label>Website</label>
+        <a href="@Model.Info.Website">@Model.Info.Website</a><br />
+        <label>Description</label>
+        <p>@Model.Info.Description</p>
+        <label>CEO</label>
+        <p>@Model.Info.CEO</p>
+        <label>Sector</label>
+        <p>@Model.Info.Sector</p>
     </div>
     <div class="col-md-4">
-        <select>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-            <option>Stock</option>
-        </select>
+        <div class="list-group" style="height:60vh; overflow:scroll;">
+            @foreach (var company in Model.Companies)
+            {
+                <button type="button" class="list-group-item" onclick="changeInfo('@company.symbol')"> @company.symbol - @company.name</button>
+            }
+        </div>
     </div>
 </div>
+<script>
+    function changeInfo(symbol) {
+        setCookie("symbol", symbol, 1);
+        location.href = '/Home/Info?symbol=' + getCookie("symbol");
+    }
+</script>
