@@ -94,5 +94,30 @@ namespace TradingApp.Infrastructure.TradingAppHandler
             }
             return null;
         }
+
+        public List<Stock> GetTimeSeries(string symbol)
+        {
+            string TradingApp_API_PATH = BASE_URL + "stock/" + symbol + "/batch?types=chart&range=1m";
+
+            string charts = "";
+            List<Stock> Stocks = new List<Stock>();
+            httpClient.BaseAddress = new Uri(TradingApp_API_PATH);
+            HttpResponseMessage response = httpClient.GetAsync(TradingApp_API_PATH).GetAwaiter().GetResult();
+            if (response.IsSuccessStatusCode)
+            {
+                charts = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            if (!charts.Equals(""))
+            {
+                ChartRoot root = JsonConvert.DeserializeObject<ChartRoot>(charts, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                Stocks = root.chart.TakeLast(5).ToList();
+            }
+            //make sure to add the symbol the chart
+            foreach (Stock Stock in Stocks)
+            {
+                Stock.symbol = symbol;
+            }
+            return Stocks;
+        }
     }
 }

@@ -14,5 +14,7 @@ namespace TradingApp.DataAccess
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<Stock> Stocks { get; set; }
+        public DbSet<CompanyChange> CompanyChanges { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

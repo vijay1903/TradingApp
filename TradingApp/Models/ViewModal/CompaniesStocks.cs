@@ -8,6 +8,8 @@ namespace TradingApp.Models.ViewModal
     public class CompaniesStocks
     {
         public List<Company> Companies { get; set; }
+        public List<CompanyChange> Top5 { get; set; }
+        public List<CompanyChange> Bottom5 { get; set; }
         public Stock Current { get; set; }
         public string Dates { get; set; }
         public string Prices { get; set; }
@@ -15,9 +17,11 @@ namespace TradingApp.Models.ViewModal
         public float AvgPrice { get; set; }
         public double AvgVolume { get; set; }
 
-        public CompaniesStocks(List<Company> companies, Stock current, string dates, string prices, string volumes, float avgprice, double avgvolume)
+        public CompaniesStocks(List<Company> companies, List<CompanyChange> top5, List<CompanyChange> bottom5, Stock current, string dates, string prices, string volumes, float avgprice, double avgvolume)
         {
             Companies = companies;
+            Top5 = top5;
+            Bottom5 = bottom5;
             Current = current;
             Dates = dates;
             Prices = prices;
@@ -57,4 +61,5 @@ namespace TradingApp.Models.ViewModal
             AvgVolume = avgvolume;
         }
     }
+    
 }

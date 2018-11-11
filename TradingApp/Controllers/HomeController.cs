@@ -144,9 +144,6 @@ namespace TradingApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        /****
-        * Returns the ViewModel CompaniesStocks based on the data provided.
-        ****/
         public IActionResult saveCompanies()
         {
             List<Company> companies = new List<Company>();
@@ -165,13 +162,42 @@ namespace TradingApp.Controllers
             return View("Index");
         }
 
+        /****
+        * Returns the ViewModel CompaniesStocks based on the data provided.
+        ****/
+        public IActionResult savePercentChanges()
+        {
+            List<Company> allCompanies = dbContext.Companies.ToList();
+            List<CompanyChange> companyChange = new List<CompanyChange>();
+            foreach (Company company in allCompanies)
+            {
+                IEXHandler web = new IEXHandler();
+                //  https://api.iextrading.com/1.0/stock/aapl/time-series
+                List<Stock> Stocks = web.GetTimeSeries(company.symbol);
+                float averageChangePercentage = 0;
+                foreach (Stock stock in Stocks)
+                {
+                    averageChangePercentage += stock.changePercent;
+                }
+                averageChangePercentage /= Stocks.Count;
+                
+                dbContext.CompanyChanges.Update(new CompanyChange(company.symbol, company.name, averageChangePercentage));
+            }
+            dbContext.SaveChanges();
+            return View("Index");
+        }
+
         public CompaniesStocks getCompaniesStocksModel(List<Stock> Stocks)
         {
+            //savePercentChanges();
             List<Company> companies = dbContext.Companies.ToList();
-
+            List<CompanyChange> companyChanges = dbContext.CompanyChanges.ToList();
+            companyChanges = companyChanges.OrderBy(c => c.AveragePercentChange).ToList();
+            List<CompanyChange> top5 = companyChanges.TakeLast(5).ToList();
+            List<CompanyChange> bottom5 = companyChanges.Take(5).ToList();
             if (Stocks.Count == 0)
             {
-                return new CompaniesStocks(companies, null, "", "", "", 0, 0);
+                return new CompaniesStocks(companies, null, null, null, "", "", "", 0, 0);
             }
 
             Stock current = Stocks.Last();
@@ -180,7 +206,7 @@ namespace TradingApp.Controllers
             string volumes = string.Join(",", Stocks.Select(e => e.volume / 1000000)); //Divide vol by million
             float avgprice = Stocks.Average(e => e.high);
             double avgvol = Stocks.Average(e => e.volume) / 1000000; //Divide volume by million
-            return new CompaniesStocks(companies, Stocks.Last(), dates, prices, volumes, avgprice, avgvol);
+            return new CompaniesStocks(companies,top5, bottom5, Stocks.Last(), dates, prices, volumes, avgprice, avgvol);
         }
 
         public CompareCompanies getCompareCompaniesModel(SortedList<String, List<Stock>> companyStocks)

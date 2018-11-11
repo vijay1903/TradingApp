@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +20,8 @@ namespace TradingApp.Models
     //    public Stock[] chart { get; set; }
     //}
     public class Stock
-    {
+    { 
+        [Key]
         public int StockId { get; set; }
         public string date { get; set; }
         public float open { get; set; }

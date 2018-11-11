@@ -9,12 +9,12 @@ namespace TradingApp.Models
     public class User
     {
         [Key]
-        public string username { get; set; }
-        public string name { get; set; }
-        public string dateJoined { get; set; }
-        public string lastLogin { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
-        public List<Stock> interestedStocks { get; set; }
+        public string Username { get; set; }
+        public string Name { get; set; }
+        public string DateJoined { get; set; }
+        public string LastLogin { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public List<Stock> InterestedStocks { get; set; }
     }
 }

@@ -66,33 +66,31 @@
         </table>
     </div>
     <div id="live" class="col-md-2">
-        <a asp-controller="Home" asp-action="saveCompanies">Refresh Companies</a>
-        <div id="userOnly" style="display:none;">
+        <button class="btn btn-danger" onclick="refresh()">Refresh Companies</button>
+        <div id="userOnly">
             <label>
                 Recommended Top 5 to buy
             </label>
-            <ul>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
+            <ul class="list-group">
+                @foreach (var top in Model.Top5)
+                {
+                    <li class="list-group-item"> @top.Symbol - @top.Name</li>
+                }
             </ul>
             <label>
                 Recommended Top 5 to sell
             </label>
-            <ul>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
-                <li>Stock</li>
+            <ul class="list-group">
+                @foreach (var bottom in Model.Bottom5)
+                {
+                    <li class="list-group-item"> @bottom.Symbol - @bottom.Name</li>
+                }
             </ul>
         </div>
         
         <div style="height:80vh; overflow:auto">
             <label>
-                Other stocks
+                All stocks
             </label>
             <div class="list-group" size="10">
                 @foreach (var company in Model.Companies)
@@ -106,6 +104,11 @@
 </div>
 <script>
     //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
-     createChart("homeChart",["@Model.Dates"], ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
+    createChart("homeChart", ["@Model.Dates"], ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
+    function refresh() {
+        if (window.confirm("Refreshing can take several minutes. Do you want to continue?")) {
+            location.href = "/Home/saveCompanies";
+        }
+    }
 </script>
 <script src="~/js/JavaScript.js"></script>

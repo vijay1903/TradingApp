@@ -2,5 +2,48 @@
     ViewData["Title"] = "About";
 }
 <h2>@ViewData["Title"]</h2>
-
-<p>Use this area to provide additional information. Tell something about Trading App.</p>
+<div class="container-fluid">
+    <h2>Trading App</h2>
+    <p>
+        Trading App is a web application built using .NET framework and hosted on Azure. It uses Azure SQL database to store data. The app is receiving data from IEX Trading API (For more details go to this <a href="https://iextrading.com/developer/">link</a>).
+    </p>
+    <h2>Page Descriptions</h2>
+    <h3>Home</h3>
+    <p>
+        This is the main page of the application. The page shows a lot of information in the form of graphs(using <a href="https://www.chartjs.org">Chart.js</a>). The page is mainly divided into two sections:
+        <ul>
+            <li>
+                Chart - The chart area has further two parts:
+                <ul>
+                    <li>Main chart - This chart shows the prices and volumes of the stocks sold for the selected company for the range selected.</li>
+                    <li>Chart Options - In this section you are provided with options of various ranges. After which a brief information about the current stock values like symbol, name of company, opening price, closing price, etc.</li>
+                </ul>
+            </li>
+            <li>
+                Stock List: This is the list of the stocks. There are three section for stocks.
+                <ol>
+                    <li>
+                        Top 5 to buy: These are the stocks which you can buy. They are chosen from all the stocks based on historical 5 days prices of the stock. For details go to <a href="#choosingTop">Choosing Top</a> section.
+                    </li>
+                    <li>
+                        Top 5 to sell: These are the stocks which you can sell.They are chosen from all the stocks based on historical 5 days prices of the stock.
+                    </li>
+                    <li>
+                        All Stocks: This is the list of all the stocks from IEX Trading API.
+                    </li>
+                </ol>
+            </li>
+        </ul>
+    </p>
+    <h3>Compare</h3>
+    <p>On this page you can compare stock prices of multiple companies and view them on the chart. Just select companies pressing Ctrl(Cmd for Mac) and press compare button.</p>
+    <h3>Info</h3>
+    <p>This page gives you a detailed information about each stock.</p>
+    <h3>Account</h3>
+    <p>This is a page where a user can see his inforamtion.</p>
+    <h3>About</h3>
+    <p>On this page you will find information about this application.</p>
+    <h2 id="choosingTop">Choosing Top</h2>
+    <p>A simple method is used to select top 5 stocks to buy or sell. Historical data of each company for 5 days is fetched from the API. From each days values percentage change is take and an average percentage change is saved for each company for the five days. Now, the data is sorted by the average percentage change values. The 5 companies with most negative average percentage change are taken for the stocks to buy and 5 companies with highest average percentage change is taken as the stocks to sell.</p>
+    <p>Created by: Vijay Vishwakarma</p>
+</div>
