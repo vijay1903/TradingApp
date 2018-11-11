@@ -9,6 +9,15 @@ namespace TradingApp.Models
     {
         public Stock[] chart { get; set; }
     }
+    //public class ChartList
+    //{
+    //    public SymbolChart[] symbolChart {get; set;}
+    //}
+    //public class SymbolChart
+    //{
+    //    public String symbol { get; set; }
+    //    public Stock[] chart { get; set; }
+    //}
     public class Stock
     {
         public int StockId { get; set; }

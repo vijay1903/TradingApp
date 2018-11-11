@@ -33,38 +33,41 @@ function getCookie(cname) {
 
 
 function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
+    console.log(id, xlabels, ylabels, ydatas, cdataavgs);
     var ctx = document.getElementById(id).getContext('2d');
     var ydatasets = [];
     var yannotations = [];
     var borderColors = ['rgba(0, 255, 0, 1)', 'rgba(255, 0, 0, 1)'];
-    var bgColor = ['rgba(0, 255, 0, 0.1)', 'rgba(255, 0, 0, 1)']
+    var bgColor = ['rgba(0, 255, 0, 0.1)', 'rgba(255, 0, 0, 0.1)']
     for (var i = 0; i < ylabels.length; i++) {
-        ydatasets.push({
-            label: ylabels[i],
-            data: ydatas[i].split(","),
-            type: (ylabels[i]!= 'Volumes')?'line':'bar',
-            borderColor: borderColors[i],
-            backgroundColor: bgColor[i],
-            lineTension: 0
-        });
-        yannotations.push({
-            type: 'line',
-            mode: 'horizontal',
-            scaleID: 'H',
-            value: cdataavgs[i],
-            borderColor: 'green',
-            borderWidth: 1,
-            label: {
-                backgroundColor: "green",
-                content: "Mean: $" + cdataavgs[i],
-                enabled: true
-            }
-        });
+        //for (var j = 0; j < xlabels.length; j++) {
+            ydatasets.push({
+                label: ylabels[i],
+                data: ydatas[i].split(","),
+                type: (ylabels[i] != 'Volumes') ? 'line' : 'bar',
+                borderColor: borderColors[i],
+                backgroundColor: bgColor[i],
+                lineTension: 0
+            });
+            yannotations.push({
+                type: 'line',
+                mode: 'horizontal',
+                scaleID: 'H',
+                value: cdataavgs[i],
+                borderColor: 'green',
+                borderWidth: 1,
+                label: {
+                    backgroundColor: "green",
+                    content: "Mean: $" + cdataavgs[i],
+                    enabled: true
+                }
+            });
+        //}
     }
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: xlabels.split(","),
+            labels: xlabels[0].split(","),
             datasets: ydatasets
         },
         options: {

@@ -40,12 +40,12 @@ namespace TradingApp.Controllers
             ViewData["symbol"] = symbol;
             ViewBag.dbSuccessChart = 0;
             //saveCompanies();
-            List<Stock> Stocks = new List<Stock>();
+            List<Stock> Stocks = null;
             if (symbol != null)
             {
                 IEXHandler webHandler = new IEXHandler();
                 Stocks = webHandler.GetChart(symbol,range);
-                Stocks = Stocks.OrderBy(c => c.date).ToList(); //Make sure the data is in ascending order of date.
+                /*Stocks = Stocks.OrderBy(c => c.date).ToList();*/ //Make sure the data is in ascending order of date.
             }
 
             CompaniesStocks companiesStocks = getCompaniesStocksModel(Stocks);
@@ -53,12 +53,44 @@ namespace TradingApp.Controllers
             //return View();
         }
 
-        public IActionResult Compare()
+        public IActionResult Compare(String[] syms, String range)
         {
             //Input: Comparing Parameter, Stocks to compare, Chart Range
             //Output: Symbols, Chart Data
+            //String symbol = ViewData["symbol"].ToString();
+            if (range == null)
+            {
+                range = "1m";
+            }
+            List<string> symbols = new List<string>();
+            if (syms.Length == 0)
+            { 
+                symbols.Add("A");
+                symbols.Add("AAPL");
+                syms = symbols.ToArray();
+            }
 
-            return View();
+            ViewData["range"] = range;
+            ViewData["symbols"] = symbols;
+            ViewBag.dbSuccessChart = 0;
+            //saveCompanies();
+            List<Stock> Stocks = null;
+            SortedList<String,List<Stock>> companyStocks = new SortedList<String, List<Stock>>();
+            if (syms.Length != 0)
+            {   
+                for (int i = 0; i < syms.Length; i++)
+                {
+                    IEXHandler webHandler = new IEXHandler();
+                    String symbol = syms[i];
+                    Stocks = webHandler.GetChart(syms[i], range);
+                    Stocks = Stocks.OrderBy(c => c.date).ToList(); //Make sure the data is in ascending order of date.
+                    companyStocks.Add(symbol,Stocks);
+                }
+            }
+
+            CompareCompanies compareCompanies = getCompareCompaniesModel(companyStocks);
+            return View(compareCompanies);
+            //return View();
         }
 
         public IActionResult Info()
@@ -129,25 +161,61 @@ namespace TradingApp.Controllers
             double avgvol = Stocks.Average(e => e.volume) / 1000000; //Divide volume by million
             return new CompaniesStocks(companies, Stocks.Last(), dates, prices, volumes, avgprice, avgvol);
         }
-        public IActionResult SaveCharts(string symbol)
+
+        public CompareCompanies getCompareCompaniesModel(SortedList<String,List<Stock>> companyStocks)
         {
-            IEXHandler webHandler = new IEXHandler();
-            List<Stock> stocks = webHandler.GetChart(symbol, "1m");
-            //List<Equity> equities = JsonConvert.DeserializeObject<List<Equity>>(TempData["Equities"].ToString());
-            foreach (Stock stock in stocks)
+            List<Company> companies = dbContext.Companies.ToList();
+            //List<Company> compare = null;
+            //List<Stock> compareStocks = null;
+            //List<Stock> current = null;
+            String dates = "";
+            String prices = "";
+            String volumes = "";
+            float avgPrice = 0;
+            Double avgVolume = 0;
+            if (companyStocks.Count == 0)
             {
-                if (dbContext.Stocks.Where(c => c.date.Equals(stock.date)).Count() == 0)
-                {
-                    dbContext.Stocks.Add(stock);
-                }
+                return new CompareCompanies(companies, null);
             }
-
-            dbContext.SaveChanges();
-            ViewBag.dbSuccessChart = 1;
-
-            CompaniesStocks companiesEquities = getCompaniesStocksModel(stocks);
-            ViewData["message"] = "Chart saved successfully for "+symbol+" for 1 month.";
-            return View("Index", companiesEquities);
+            List<CompareCompany> tempCompany = new List<CompareCompany>();
+            for (int i = 0; i < companyStocks.Count; i++)
+            {
+                dates = string.Join(",", companyStocks.Values[i].Select(e => e.date));
+                prices = string.Join(",", companyStocks.Values[i].Select(e => e.high));
+                volumes = string.Join(",", companyStocks.Values[i].Select(e => e.volume / 1000000)); //Divide vol by million
+                avgPrice = companyStocks.Values[i].Average(e => e.high);
+                avgVolume = companyStocks.Values[i].Average(e => e.volume) / 1000000; //Divide volume by million
+                tempCompany.Add(new CompareCompany(companyStocks.Values[i].Last(), companyStocks.Keys[i], dates, prices, volumes, avgPrice, avgVolume));
+                //current.Add(companyStocks[i].Last());
+                //dates.Add(string.Join(",", companyStocks[i].Select(e => e.date)));
+                //prices.Add(string.Join(",", companyStocks[i].Select(e => e.high)));
+                //volumes.Add(string.Join(",", companyStocks[i].Select(e => e.volume / 1000000))); //Divide vol by million
+                //avgPrice.Add(companyStocks[i].Average(e => e.high));
+                //avgVolume.Add(companyStocks[i].Average(e => e.volume) / 1000000); //Divide volume by million
+            }
+            return new CompareCompanies(companies, tempCompany);
         }
-    }
+
+
+        public IActionResult SaveCharts(string symbol)
+            {
+                IEXHandler webHandler = new IEXHandler();
+                List<Stock> stocks = webHandler.GetChart(symbol, "1m");
+                //List<Equity> equities = JsonConvert.DeserializeObject<List<Equity>>(TempData["Equities"].ToString());
+                foreach (Stock stock in stocks)
+                {
+                    if (dbContext.Stocks.Where(c => c.date.Equals(stock.date)).Count() == 0)
+                    {
+                        dbContext.Stocks.Add(stock);
+                    }
+                }
+
+                dbContext.SaveChanges();
+                ViewBag.dbSuccessChart = 1;
+
+                CompaniesStocks companiesEquities = getCompaniesStocksModel(stocks);
+                ViewData["message"] = "Chart saved successfully for "+symbol+" for 1 month.";
+                return View("Index", companiesEquities);
+            }
+        }
 }

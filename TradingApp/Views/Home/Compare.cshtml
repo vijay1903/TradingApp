@@ -1,26 +1,54 @@
-﻿@{
+﻿@model TradingApp.Models.ViewModal.CompareCompanies
+@{
     ViewData["Title"] = "Compare Stocks";
 }
-<div class="container">
-    <div class="col-md-8">
-        <canvas>
 
-        </canvas>
+<div class="container-fluid">
+    <div class="col-md-8">
+        <canvas id="compareChart" height="500" width="800"></canvas>
     </div>
     <div class="col-md-4">
-        <div class="row">
-            <select>
-                <option>Open</option>
-                <option>Close</option>
-                <option>High</option>
-            </select>
+        <div>
+            @*<select class="list-group">
+            <option value="open">Open</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+            <option value="close" selected>Close</option>
+            <option value="volume" selected>Volume</option>
+            <option value="change">Change</option>
+            <option value="changePercent">Percentage Change</option>
+            <option value="changeOverTime">Change Over Time</option>
+        </select>*@
         </div>
-        <div class="row">
-            <select multiple>
-                <option>Stock</option>
-                <option>Stock</option>
-                <option>Stock</option>
+        <div style="height:80vh; overflow:auto">
+            <select class="list-group" multiple size="15">
+                @foreach (var company in Model.Companies)
+                {
+                    <option class="list-group-item" value="@company.symbol"> @company.symbol - @company.name</option>
+                }
             </select>
+            <button>Compare</button>
         </div>
     </div>
 </div>
+<script>
+    var dates = [];
+    var prices = [];
+    var volumes = [];
+    var avgs = [];
+    var symbols = [];
+</script>
+@foreach (var company in Model.compareCompanies)
+{
+    <script>
+        dates.push("@company.Dates");
+        prices.push("@company.Prices");
+        volumes.push("@company.Volumes");
+        avgs.push(@company.AvgPrice);
+        symbols.push("@company.Symbol");
+    </script>
+}
+<script>
+    console.log("Dates: ", dates, "\nPrices: ", prices, "\nVolumes: ", volumes, "\nAverages: ", avgs);
+    createChart("compareChart", dates, symbols, prices, avgs)
+</script>

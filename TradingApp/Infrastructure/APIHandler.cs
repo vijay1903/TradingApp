@@ -77,5 +77,38 @@ namespace TradingApp.Infrastructure.TradingAppHandler
 
             return Stocks;
         }
+        
+        public List<Stock[]> GetCharts(List<string> symbols, string range)
+        {
+            if (symbols.Count == 0)
+            {
+                symbols.Add("A");
+                symbols.Add("AAPL");
+            }
+        // https://api.iextrading.com/1.0/stock/market/batch?symbols=aapl,fb&types=chart&range=1m&last=5
+            string TradingApp_API_PATH = BASE_URL + "stock/market/batch?symbols=A,AAPL&types=chart&range=" + range;
+
+            string charts = "";
+            List<Stock[]> Stocks = null;
+            httpClient.BaseAddress = new Uri(TradingApp_API_PATH);
+            HttpResponseMessage response = httpClient.GetAsync(TradingApp_API_PATH).GetAwaiter().GetResult();
+            if (response.IsSuccessStatusCode)
+            {
+                charts = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            charts = "[" + charts + "]";
+            if (!charts.Equals(""))
+            {
+                List<Stock[]> root = JsonConvert.DeserializeObject<List<Stock[]>>(charts, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                Stocks = root;
+            }
+            //make sure to add the symbol the chart
+            //foreach (Stock Stock in Stocks)
+            //{
+            //    Stock.symbol = symbols[0];
+            //}
+
+            return Stocks;
+        }
     }
 }
