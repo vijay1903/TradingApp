@@ -1,8 +1,8 @@
 ﻿function selectRange() {
     var options = document.getElementById("chart_range").children;
     var selected = getCookie("range");
-    if (getCookie("range") == undefined) {
-        selected = "1y";
+    if (getCookie("range") == undefined || getCookie("range") == "") {
+        selected = "1d";
     }
     for (var i = 0; i < options.length; i++) {
         if (options[i].value == selected) {

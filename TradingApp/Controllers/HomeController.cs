@@ -29,18 +29,17 @@ namespace TradingApp.Controllers
             
             //String symbol = ViewData["symbol"].ToString();
             if(range == null){
-                range = "1y";
-               
+                range = "1m";
             }
             if(symbol == null)
             {
                 symbol = "A";
-                
             }
 
             ViewData["range"] = range;
             ViewData["symbol"] = symbol;
             ViewBag.dbSuccessChart = 0;
+            //saveCompanies();
             List<Stock> Stocks = new List<Stock>();
             if (symbol != null)
             {
@@ -95,6 +94,24 @@ namespace TradingApp.Controllers
         /****
         * Returns the ViewModel CompaniesStocks based on the data provided.
         ****/
+        public IActionResult saveCompanies()
+        {
+            List<Company> companies = new List<Company>();
+            IEXHandler webHandler = new IEXHandler();
+            companies = webHandler.GetSymbols();
+            companies = companies.OrderBy(c => c.symbol).ToList();
+            foreach (Company company in companies)
+            {
+                if(dbContext.Companies.Where(c => c.symbol.Equals(company.symbol)).Count() == 0)
+                {
+                    dbContext.Companies.Add(company);
+                }
+            }
+            dbContext.SaveChanges();
+            ViewData["message"] = "Companies Refreshed!";
+            return View("Index");
+        }
+
         public CompaniesStocks getCompaniesStocksModel(List<Stock> Stocks)
         {
             List<Company> companies = dbContext.Companies.ToList();
@@ -111,6 +128,26 @@ namespace TradingApp.Controllers
             float avgprice = Stocks.Average(e => e.high);
             double avgvol = Stocks.Average(e => e.volume) / 1000000; //Divide volume by million
             return new CompaniesStocks(companies, Stocks.Last(), dates, prices, volumes, avgprice, avgvol);
+        }
+        public IActionResult SaveCharts(string symbol)
+        {
+            IEXHandler webHandler = new IEXHandler();
+            List<Stock> stocks = webHandler.GetChart(symbol, "1m");
+            //List<Equity> equities = JsonConvert.DeserializeObject<List<Equity>>(TempData["Equities"].ToString());
+            foreach (Stock stock in stocks)
+            {
+                if (dbContext.Stocks.Where(c => c.date.Equals(stock.date)).Count() == 0)
+                {
+                    dbContext.Stocks.Add(stock);
+                }
+            }
+
+            dbContext.SaveChanges();
+            ViewBag.dbSuccessChart = 1;
+
+            CompaniesStocks companiesEquities = getCompaniesStocksModel(stocks);
+            ViewData["message"] = "Chart saved successfully for "+symbol+" for 1 month.";
+            return View("Index", companiesEquities);
         }
     }
 }

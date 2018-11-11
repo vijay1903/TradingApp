@@ -3,13 +3,14 @@
 @{
     ViewData["Title"] = "Home";
 }
-
+<div class="alert-info alert-dismissable">@ViewData["message"]</div>
 <div class="container-fluid">
     <div id="home_chart" class="col-md-8">
         <!--Stock chart-->
         <br />
         <canvas id="homeChart" height="500" width="880"></canvas>
-    </div>
+        <a asp-controller="Home" asp-action="SaveCharts" asp-route-symbol="@Model.Current.symbol">Save Chart</a>
+</div>
     <div id="chart_options" class="col-md-2">
         <select id="chart_range" style="width:100%; margin:10px" onchange='changeChart("@ViewData["Symbol"]")'>
             <!-- Date Range of stocks for chart -->
@@ -40,23 +41,32 @@
             <!-- Stock Information -->
             <tr>
                 <td>Company Symbol: </td>
-                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).symbol</td>
+                <td>@Model.Current.symbol</td>
             </tr>
             <tr>
-                <td>Company Name: </td>
-                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).name</td>
+                <td>Low: </td>
+                <td>@Model.Current.low</td>
             </tr>
             <tr>
-                <td>Type: </td>
-                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).type</td>
+                <td>High: </td>
+                <td>@Model.Current.high</td>
             </tr>
             <tr>
-                <td>IEX Id: </td>
-                <td>@Model.Companies.Find(c => c.symbol == ViewData["symbol"].ToString()).iexId</td>
+                <td>Open: </td>
+                <td>@Model.Current.open</td>
+            </tr>
+            <tr>
+                <td>Close: </td>
+                <td>@Model.Current.close</td>
+            </tr>
+            <tr>
+                <td>Change: </td>
+                <td>@Model.Current.change</td>
             </tr>
         </table>
     </div>
     <div id="live" class="col-md-2">
+        <a asp-controller="Home" asp-action="saveCompanies">Refresh Companies</a>
         <div id="userOnly" style="display:none;">
             <label>
                 Recommended Top 5 to buy

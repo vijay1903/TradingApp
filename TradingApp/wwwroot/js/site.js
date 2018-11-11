@@ -37,7 +37,7 @@ function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
     var ydatasets = [];
     var yannotations = [];
     var borderColors = ['rgba(0, 255, 0, 1)', 'rgba(255, 0, 0, 1)'];
-    var bgColor = ['rgba(0, 255, 0, 0.1)', 'rgba(255, 0, 0, 0.1)']
+    var bgColor = ['rgba(0, 255, 0, 0.1)', 'rgba(255, 0, 0, 1)']
     for (var i = 0; i < ylabels.length; i++) {
         ydatasets.push({
             label: ylabels[i],
