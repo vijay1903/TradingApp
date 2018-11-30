@@ -9,7 +9,8 @@
         <!--Stock chart-->
         <br />
         <canvas id="homeChart" height="500" width="880"></canvas>
-        <a asp-controller="Home" asp-action="SaveCharts" asp-route-symbol="@Model.Current.symbol">Save Chart</a>
+        <a id="save_chart" class="btn btn-success" asp-controller="Home" asp-action="SaveCharts" asp-route-symbol="@Model.Current.symbol">Save Chart</a>
+        <h4>@ViewData["props"]</h4>
 </div>
     <div id="chart_options" class="col-md-2">
         <select id="chart_range" style="width:100%; margin:10px" onchange='changeChart("@ViewData["Symbol"]")'>
@@ -25,18 +26,6 @@
             <option value="5y">5 Years</option>
             <option value="">All</option>
         </select>
-        @*<select id="chart_properties" style="width:100%; margin:10px" size="5" multiple>*@
-            <!--Stock properties to show on chart
-    Price, Open, Close(default), High, Low, Volume(default)-->
-            @*<option value="open">Open</option>
-            <option value="high">High</option>
-            <option value="low">Low</option>
-            <option value="close" selected>Close</option>
-            <option value="volume" selected>Volume</option>
-            <option value="change">Change</option>
-            <option value="changePercent">Percentage Change</option>
-            <option value="changeOverTime">Change Over Time</option>
-        </select>*@
         <table class="table">
             <!-- Stock Information -->
             <tr>
@@ -104,10 +93,10 @@
 </div>
 <script>
     //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
-    createChart("homeChart", ["@Model.Dates"], ["Prices", "Volumes"], ["@Model.Prices", "@Model.Volumes"], [@Model.AvgPrice, @Model.AvgVolume]);
+    createChart("homeChart", ["@Model.Dates"], ["Open", "High", "Low", "Close", "Volume", "Change", "Percentage Change", "Change Over Time"], ["@Model.Opens", "@Model.Highs", "@Model.Lows", "@Model.Closes", "@Model.Volumes", "@Model.Changes", "@Model.PercentageChanges", "@Model.ChangesOverTime"], [@Model.AvgPrice, @Model.AvgVolume]);
     function refresh() {
         if (window.confirm("Refreshing can take several minutes. Do you want to continue?")) {
-            location.href = "/Home/saveCompanies";
+            location.href = "/Home/SaveCompanies";
         }
     }
 </script>

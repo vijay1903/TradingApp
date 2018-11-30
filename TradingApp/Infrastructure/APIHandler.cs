@@ -40,7 +40,6 @@ namespace TradingApp.Infrastructure.TradingAppHandler
             if (!companyList.Equals(""))
             {
                 companies = JsonConvert.DeserializeObject<List<Company>>(companyList);
-                //companies = companies.GetRange(0, 49);
             }
             return companies;
         }

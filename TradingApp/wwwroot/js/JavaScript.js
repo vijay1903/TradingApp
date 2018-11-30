@@ -14,8 +14,8 @@
 }
 selectRange();
 function changeChart(symbol) {
-    var selected = $("#chart_range").val();
-    setCookie("range", selected, 1);
+    var selected_range = $("#chart_range").val();
+    setCookie("range", selected_range, 1);
     setCookie("symbol", symbol, 1);
-    location.href = '/Home/Index?symbol=' + getCookie("symbol") + '&range=' + selected;
+    location.href = '/Home/Index?symbol=' + getCookie("symbol") + '&range=' + selected_range;
 }

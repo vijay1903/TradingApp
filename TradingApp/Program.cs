@@ -21,5 +21,10 @@ namespace TradingApp
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build();
+        //WebHost.CreateDefaultBuilder(args)
+        //    .CaptureStartupErrors(true)
+        //    .UseSetting("detailedErrors", "true")
+        //    .UseStartup<Startup>()
+        //    .Build();
     }
 }

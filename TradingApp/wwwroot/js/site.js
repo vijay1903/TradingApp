@@ -30,33 +30,52 @@ function getCookie(cname) {
 // ylabels - array of labels for Y-Axis
 // ydatas - array of data for Y-Axis
 // cdataavgs - array of average values of Y-Axis Data
-
+var dynamicColors = function () {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b +",";
+};
 
 function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
     console.log(id, xlabels, ylabels, ydatas, cdataavgs);
     var ctx = document.getElementById(id).getContext('2d');
     var ydatasets = [];
     var yannotations = [];
+    var borderColors = [];
+    var bgColors = [];
+    //for (var i = 0; i < ylabels.length; i++) {
+    //    var color = dynamicColors();
+    //    borderColors.push(color + " 1)");
+    //    bgColors.push(color + " 0.2)");
+    //}
     var borderColors = ['rgba(255,99,132,1)',
         'rgba(54, 162, 235, 1)',
         'rgba(255, 206, 86, 1)',
         'rgba(75, 192, 192, 1)',
         'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)'];
-    var bgColor = ['rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 10, 64, 1)',
+        'rgba(10, 159, 64, 1)',
+        'rgba(255, 159, 10, 1)'];
+    var bgColors = ['rgba(255, 99, 132, 0.2)',
         'rgba(54, 162, 235, 0.2)',
         'rgba(255, 206, 86, 0.2)',
         'rgba(75, 192, 192, 0.2)',
         'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)']
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 10, 64, 0.2)',
+        'rgba(10, 159, 64, 0.2)',
+        'rgba(255, 159, 10, 0.2)'];
     for (var i = 0; i < ylabels.length; i++) {
         ydatasets.push({
             label: ylabels[i],
             fill: false,
             data: ydatas[i].split(","),
-            type: (ylabels[i] != 'Volumes') ? 'line' : 'bar',
+            hidden: !((ylabels[i] == 'Close') || (ylabels[i] == 'Volume')),
+            type: (ylabels[i] != 'Volume') ? 'line' : 'bar',
             borderColor: borderColors[i],
-            backgroundColor: bgColor[i],
+            backgroundColor: bgColors[i],
             lineTension: 0
         });
         yannotations.push({
@@ -86,6 +105,9 @@ function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
                     type: 'linear',
                     position: 'left',
                 }]
+            },
+            legend: {
+                position: 'right'
             },
             annotation: {
                 drawTime: 'afterDatasetsDraw',

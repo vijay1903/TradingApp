@@ -53,13 +53,12 @@
 {
     <script>
         dates.push("@company.Dates");
-        prices.push("@company.Prices");
+        prices.push("@company.Closes");
         volumes.push("@company.Volumes");
         avgs.push(@company.AvgPrice);
         symbols.push("@company.Symbol");
     </script>
 }
 <script>
-    console.log("Dates: ", dates, "\nPrices: ", prices, "\nVolumes: ", volumes, "\nAverages: ", avgs);
     createChart("compareChart", dates, symbols, prices, avgs)
 </script>

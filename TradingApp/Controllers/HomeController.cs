@@ -40,7 +40,7 @@ namespace TradingApp.Controllers
             ViewData["range"] = range;
             ViewData["symbol"] = symbol;
             ViewBag.dbSuccessChart = 0;
-            //saveCompanies();
+            //SaveCompanies();
             List<Stock> Stocks = null;
             if (symbol != null)
             {
@@ -51,7 +51,6 @@ namespace TradingApp.Controllers
 
             CompaniesStocks companiesStocks = getCompaniesStocksModel(Stocks);
             return View(companiesStocks);
-            //return View();
         }
 
         public IActionResult Compare(String[] symbols, String range, String paramter)
@@ -74,7 +73,7 @@ namespace TradingApp.Controllers
             ViewData["range"] = range;
             ViewData["symbols"] = symbols;
             ViewBag.dbSuccessChart = 0;
-            //saveCompanies();
+            //SaveCompanies();
             List<Stock> Stocks = null;
             SortedList<String, List<Stock>> companyStocks = new SortedList<String, List<Stock>>();
             if (symbols.Length != 0)
@@ -144,7 +143,7 @@ namespace TradingApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public IActionResult saveCompanies()
+        public IActionResult SaveCompanies()
         {
             List<Company> companies = new List<Company>();
             IEXHandler webHandler = new IEXHandler();
@@ -158,21 +157,22 @@ namespace TradingApp.Controllers
                 }
             }
             dbContext.SaveChanges();
-            ViewData["message"] = "Companies Refreshed!";
-            return View("Index");
+            List<Stock> stocks = webHandler.GetChart("A", "1m");
+            CompaniesStocks companiesStocks = getCompaniesStocksModel(stocks);
+            ViewData["message"] = "Companies refreshed successfully.";
+            return View("Index", companiesStocks);
         }
 
         /****
         * Returns the ViewModel CompaniesStocks based on the data provided.
         ****/
-        public IActionResult savePercentChanges()
+        public IActionResult SavePercentChanges()
         {
-            List<Company> allCompanies = dbContext.Companies.ToList();
+            List<Company> allCompanies = dbContext.Companies.OrderBy(c => c.symbol).ToList();
             List<CompanyChange> companyChange = new List<CompanyChange>();
-            foreach (Company company in allCompanies)
+            foreach (Company company in allCompanies.Take(50))
             {
                 IEXHandler web = new IEXHandler();
-                //  https://api.iextrading.com/1.0/stock/aapl/time-series
                 List<Stock> Stocks = web.GetTimeSeries(company.symbol);
                 float averageChangePercentage = 0;
                 foreach (Stock stock in Stocks)
@@ -180,16 +180,30 @@ namespace TradingApp.Controllers
                     averageChangePercentage += stock.changePercent;
                 }
                 averageChangePercentage /= Stocks.Count;
+                float change = (float)Math.Round(averageChangePercentage, 6);
+                CompanyChange cc = new CompanyChange(company.symbol.ToString(), company.name.ToString(), change);
+                if (dbContext.CompanyChanges.Where(c => c.Symbol.Equals(company.symbol)).Count() == 0)
+                {
+                    dbContext.CompanyChanges.AddAsync(cc);
+                }
+                else
+                {
+                    dbContext.CompanyChanges.Update(cc);
+                }
                 
-                dbContext.CompanyChanges.Update(new CompanyChange(company.symbol, company.name, averageChangePercentage));
             }
+            
             dbContext.SaveChanges();
-            return View("Index");
+            IEXHandler webHandler = new IEXHandler();
+            List<Stock> stocks = webHandler.GetChart("A", "1m");
+            CompaniesStocks companiesStocks = getCompaniesStocksModel(stocks);
+            ViewData["message"] = "Recommendation refreshed successfully.";
+            return View("Index", companiesStocks);
         }
 
         public CompaniesStocks getCompaniesStocksModel(List<Stock> Stocks)
         {
-            //savePercentChanges();
+            //SavePercentChanges();
             List<Company> companies = dbContext.Companies.ToList();
             List<CompanyChange> companyChanges = dbContext.CompanyChanges.ToList();
             companyChanges = companyChanges.OrderBy(c => c.AveragePercentChange).ToList();
@@ -197,16 +211,22 @@ namespace TradingApp.Controllers
             List<CompanyChange> bottom5 = companyChanges.Take(5).ToList();
             if (Stocks.Count == 0)
             {
-                return new CompaniesStocks(companies, null, null, null, "", "", "", 0, 0);
+                return new CompaniesStocks(companies, null, null, null, "", "", "", "", "", "", "", "", "", 0, 0);
             }
 
             Stock current = Stocks.Last();
             string dates = string.Join(",", Stocks.Select(e => e.date));
-            string prices = string.Join(",", Stocks.Select(e => e.high));
+            string highs = string.Join(",", Stocks.Select(e => e.high));
+            string lows = string.Join(",", Stocks.Select(e => e.low));
+            string closes = string.Join(",", Stocks.Select(e => e.close));
+            string opens = string.Join(",", Stocks.Select(e => e.open));
+            string changes = string.Join(",", Stocks.Select(e => e.change));
+            string percentChanges = string.Join(",", Stocks.Select(e => e.changePercent));
+            string changesovertime = string.Join(",", Stocks.Select(e => e.changeOverTime));
             string volumes = string.Join(",", Stocks.Select(e => e.volume / 1000000)); //Divide vol by million
             float avgprice = Stocks.Average(e => e.high);
             double avgvol = Stocks.Average(e => e.volume) / 1000000; //Divide volume by million
-            return new CompaniesStocks(companies,top5, bottom5, Stocks.Last(), dates, prices, volumes, avgprice, avgvol);
+            return new CompaniesStocks(companies,top5, bottom5, Stocks.Last(), dates, opens, highs, lows, closes, volumes, changes, percentChanges, changesovertime, avgprice, avgvol);
         }
 
         public CompareCompanies getCompareCompaniesModel(SortedList<String, List<Stock>> companyStocks)
@@ -259,9 +279,9 @@ namespace TradingApp.Controllers
             dbContext.SaveChanges();
             ViewBag.dbSuccessChart = 1;
 
-            CompaniesStocks companiesEquities = getCompaniesStocksModel(stocks);
+            CompaniesStocks companiesStocks = getCompaniesStocksModel(stocks);
             ViewData["message"] = "Chart saved successfully for " + symbol + " for 1 month.";
-            return View("Index", companiesEquities);
+            return View("Index", companiesStocks);
         }
     }
 }
