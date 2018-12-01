@@ -93,7 +93,7 @@
 </div>
 <script>
     //createChart(id, xlabels, ylabels, ydatas, cdataavgs)
-    createChart("homeChart", ["@Model.Dates"], ["Open", "High", "Low", "Close", "Volume", "Change", "Percentage Change", "Change Over Time"], ["@Model.Opens", "@Model.Highs", "@Model.Lows", "@Model.Closes", "@Model.Volumes", "@Model.Changes", "@Model.PercentageChanges", "@Model.ChangesOverTime"], [@Model.AvgPrice, @Model.AvgVolume]);
+    createChart("homeChart", ["@Model.Dates"], ["Open", "High", "Low", "Close", "Volume", "Change", "Percentage Change", "Change Over Time"], ["@Model.Opens", "@Model.Highs", "@Model.Lows", "@Model.Closes", "@Model.Volumes", "@Model.Changes", "@Model.PercentageChanges", "@Model.ChangesOverTime"], [@Model.AvgPrice, @Model.AvgVolume], true);
     function refresh() {
         if (window.confirm("Refreshing can take several minutes. Do you want to continue?")) {
             location.href = "/Home/SaveCompanies";

@@ -37,7 +37,7 @@ var dynamicColors = function () {
     return "rgba(" + r + "," + g + "," + b +",";
 };
 
-function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
+function createChart(id, xlabels, ylabels, ydatas, cdataavgs, notAll) {
     console.log(id, xlabels, ylabels, ydatas, cdataavgs);
     var ctx = document.getElementById(id).getContext('2d');
     var ydatasets = [];
@@ -72,7 +72,7 @@ function createChart(id, xlabels, ylabels, ydatas, cdataavgs) {
             label: ylabels[i],
             fill: false,
             data: ydatas[i].split(","),
-            hidden: !((ylabels[i] == 'Close') || (ylabels[i] == 'Volume')),
+            hidden: (!((ylabels[i] == 'Close') || (ylabels[i] == 'Volume')) && notAll),
             type: (ylabels[i] != 'Volume') ? 'line' : 'bar',
             borderColor: borderColors[i],
             backgroundColor: bgColors[i],

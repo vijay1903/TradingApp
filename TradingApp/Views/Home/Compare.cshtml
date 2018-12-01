@@ -5,6 +5,7 @@
 
 <div class="container-fluid">
     <div class="col-md-8">
+        <h4 style="text-transform:capitalize">Compared parameter: @ViewData["param"]</h4>
         <canvas id="compareChart" height="500" width="800"></canvas>
     </div>
     <div class="col-md-4">
@@ -15,11 +16,11 @@
                         <option class="list-group-item" value="@company.symbol"> @company.symbol - @company.name</option>
                     }
                 </select>
-                <select name="parameter" class="list-group">
+                <select id="param" name="parameter" class="list-group">
                     <option value="open">Open</option>
                     <option value="high">High</option>
                     <option value="low">Low</option>
-                    <option value="close" selected>Close</option>
+                    <option value="close">Close</option>
                     <option value="volume">Volume</option>
                     <option value="change">Change</option>
                     <option value="changePercent">Percentage Change</option>
@@ -53,12 +54,50 @@
 {
     <script>
         dates.push("@company.Dates");
-        prices.push("@company.Closes");
+        var param = '@ViewData["param"]'.trim();
+        var options = document.getElementById('param').children;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === param) {
+                options[i].selected = true;
+            } else {
+                options[i].selected = false;
+            }
+        }
+        switch (param) {
+            case 'open':
+                prices.push("@company.Opens");
+                break;
+            case 'low':
+                prices.push("@company.Lows");
+                break;
+            case 'high':
+                prices.push("@company.Highs");
+                break;
+            case 'close':
+                prices.push("@company.Closes");
+                break;
+            case 'change':
+                prices.push("@company.Changes");
+                break;
+            case 'changePercent':
+                prices.push("@company.PercentageChanges");
+                break;
+            case 'volume':
+                prices.push("@company.Volumes");
+                break;
+            case 'changeOverTime':
+                prices.push("@company.ChangesOverTime");
+                break;
+            default:
+                prices.push("@company.Closes");
+        }
+        
         volumes.push("@company.Volumes");
         avgs.push(@company.AvgPrice);
         symbols.push("@company.Symbol");
     </script>
 }
 <script>
-    createChart("compareChart", dates, symbols, prices, avgs)
+    createChart("compareChart", dates, symbols, prices, avgs, false);
+
 </script>

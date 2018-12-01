@@ -53,7 +53,7 @@ namespace TradingApp.Controllers
             return View(companiesStocks);
         }
 
-        public IActionResult Compare(String[] symbols, String range, String paramter)
+        public IActionResult Compare(String[] symbols, String range, String parameter)
         {
             //Input: Comparing Parameter, Stocks to compare, Chart Range
             //Output: Symbols, Chart Data
@@ -72,6 +72,7 @@ namespace TradingApp.Controllers
 
             ViewData["range"] = range;
             ViewData["symbols"] = symbols;
+            ViewData["param"] = parameter;
             ViewBag.dbSuccessChart = 0;
             //SaveCompanies();
             List<Stock> Stocks = null;
@@ -236,7 +237,13 @@ namespace TradingApp.Controllers
             //List<Stock> compareStocks = null;
             //List<Stock> current = null;
             String dates = "";
-            String prices = "";
+            String opens = "";
+            String highs = "";
+            String lows = "";
+            String closes = "";
+            String changes = "";
+            String percentChanges = "";
+            String changesovertime = "";
             String volumes = "";
             float avgPrice = 0;
             Double avgVolume = 0;
@@ -248,11 +255,17 @@ namespace TradingApp.Controllers
             for (int i = 0; i < companyStocks.Count; i++)
             {
                 dates = string.Join(",", companyStocks.Values[i].Select(e => e.date));
-                prices = string.Join(",", companyStocks.Values[i].Select(e => e.high));
+                highs = string.Join(",", companyStocks.Values[i].Select(e => e.high));
+                lows = string.Join(",", companyStocks.Values[i].Select(e => e.low));
+                opens = string.Join(",", companyStocks.Values[i].Select(e => e.open));
+                closes = string.Join(",", companyStocks.Values[i].Select(e => e.close));
+                changes = string.Join(",", companyStocks.Values[i].Select(e => e.change));
+                percentChanges = string.Join(",", companyStocks.Values[i].Select(e => e.changePercent));
+                changesovertime = string.Join(",", companyStocks.Values[i].Select(e => e.changeOverTime));
                 volumes = string.Join(",", companyStocks.Values[i].Select(e => e.volume / 1000000)); //Divide vol by million
                 avgPrice = companyStocks.Values[i].Average(e => e.high);
                 avgVolume = companyStocks.Values[i].Average(e => e.volume) / 1000000; //Divide volume by million
-                tempCompany.Add(new CompareCompany(companyStocks.Values[i].Last(), companyStocks.Keys[i], dates, prices, volumes, avgPrice, avgVolume));
+                tempCompany.Add(new CompareCompany(companyStocks.Values[i].Last(), companyStocks.Keys[i], dates, opens, lows, highs, closes, changes, percentChanges, changesovertime, volumes, avgPrice, avgVolume));
                 //current.Add(companyStocks[i].Last());
                 //dates.Add(string.Join(",", companyStocks[i].Select(e => e.date)));
                 //prices.Add(string.Join(",", companyStocks[i].Select(e => e.high)));
