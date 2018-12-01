@@ -39,6 +39,12 @@ namespace TradingApp.Controllers
 
             ViewData["range"] = range;
             ViewData["symbol"] = symbol;
+            String cookie = Request.Cookies["range"];
+            if (Request.Cookies["user"] != null)
+            {
+
+            }
+            ViewData["Account"] = "Sign In";
             ViewBag.dbSuccessChart = 0;
             //SaveCompanies();
             List<Stock> Stocks = null;
