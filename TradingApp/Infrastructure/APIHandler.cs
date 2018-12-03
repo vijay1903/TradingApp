@@ -53,7 +53,7 @@ namespace TradingApp.Infrastructure.TradingAppHandler
             // string TradingApp_API_PATH = BASE_URL + "stock/{0}/batch?types=chart&range=1y";
             // TradingApp_API_PATH = string.Format(TradingApp_API_PATH, symbol);
 
-            string TradingApp_API_PATH = BASE_URL + "stock/" + symbol + "/batch?types=chart&range="+range;
+            string TradingApp_API_PATH = BASE_URL + "stock/" + Uri.EscapeDataString(symbol) + "/batch?types=chart&range="+ Uri.EscapeDataString(range);
 
             string charts = "";
             List<Stock> Stocks = new List<Stock>();

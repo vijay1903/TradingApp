@@ -7,11 +7,14 @@
 <div class="container-fluid">
     <div id="home_chart" class="col-md-8">
         <!--Stock chart-->
+        <h3> @Model.Current.symbol</h3>
+        
         <br />
         <canvas id="homeChart" height="500" width="880"></canvas>
-        <a id="save_chart" class="btn btn-success" asp-controller="Home" asp-action="SaveCharts" asp-route-symbol="@Model.Current.symbol">Save Chart</a>
+        <a id="save_chart" class="btn btn-success" asp-controller="Home" asp-action="SaveCharts" asp-route-symbol="@Model.Current.symbol">Save Chart</a> 
+        <p style="color:red">Click on properties to view/hide on chart.</p>
         <h4>@ViewData["props"]</h4>
-</div>
+    </div>
     <div id="chart_options" class="col-md-2">
         <select id="chart_range" style="width:100%; margin:10px" onchange='changeChart("@ViewData["Symbol"]")'>
             <!-- Date Range of stocks for chart -->
@@ -50,33 +53,35 @@
             </tr>
             <tr>
                 <td>Change: </td>
-                <td>@Model.Current.change</td>
+                <td style='color:@((@Model.Current.change<0)?"red":"green")'>@Model.Current.change</td>
             </tr>
         </table>
+
+        <div id="userOnly">
+            <label>
+                Recommended Top 5 stocks
+            </label>
+            <div class="list-group">
+                @foreach (var top in Model.Top5)
+                {
+                    <button type="button" class="list-group-item" style='color:@((top.AveragePercentChange > 0)?"green":"lightgreen")' onclick='changeChart("@top.Symbol")'> @top.Symbol - @top.Name</button>
+                }
+            </div>
+            @*<label>
+                Recommended Top 5 stocks
+            </label>
+            <div class="list-group">
+                @foreach (var bottom in Model.Bottom5)
+                {
+                    <button type="button" class="list-group-item" style='color:@((bottom.AveragePercentChange > 0)?"green":"lightgreen")' onclick='changeChart("@bottom.Symbol")'> @bottom.Symbol - @bottom.Name</button>
+                }
+            </div>*@
+        </div>
     </div>
     <div id="live" class="col-md-2">
         <button class="btn btn-danger" onclick="refresh()">Refresh Companies</button>
-        <div id="userOnly">
-            <label>
-                Recommended Top 5 to buy
-            </label>
-            <ul class="list-group">
-                @foreach (var top in Model.Top5)
-                {
-                    <li class="list-group-item"> @top.Symbol - @top.Name</li>
-                }
-            </ul>
-            <label>
-                Recommended Top 5 to sell
-            </label>
-            <ul class="list-group">
-                @foreach (var bottom in Model.Bottom5)
-                {
-                    <li class="list-group-item"> @bottom.Symbol - @bottom.Name</li>
-                }
-            </ul>
-        </div>
         
+
         <div style="height:80vh; overflow:auto">
             <label>
                 All stocks
@@ -88,7 +93,7 @@
                 }
             </div>
         </div>
-        
+
     </div>
 </div>
 <script>

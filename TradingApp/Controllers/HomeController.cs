@@ -177,30 +177,47 @@ namespace TradingApp.Controllers
         {
             List<Company> allCompanies = dbContext.Companies.OrderBy(c => c.symbol).ToList();
             List<CompanyChange> companyChange = new List<CompanyChange>();
-            foreach (Company company in allCompanies.Take(50))
+            foreach (Company company in allCompanies)
             {
-                IEXHandler web = new IEXHandler();
-                List<Stock> Stocks = web.GetTimeSeries(company.symbol);
-                float averageChangePercentage = 0;
-                foreach (Stock stock in Stocks)
-                {
-                    averageChangePercentage += stock.changePercent;
-                }
-                averageChangePercentage /= Stocks.Count;
-                float change = (float)Math.Round(averageChangePercentage, 6);
-                CompanyChange cc = new CompanyChange(company.symbol.ToString(), company.name.ToString(), change);
-                if (dbContext.CompanyChanges.Where(c => c.Symbol.Equals(company.symbol)).Count() == 0)
-                {
-                    dbContext.CompanyChanges.AddAsync(cc);
-                }
-                else
-                {
-                    dbContext.CompanyChanges.Update(cc);
-                }
                 
+                try
+                {
+                    IEXHandler web = new IEXHandler();
+                    List<Stock> Stocks = web.GetTimeSeries(company.symbol);
+                    float averageChangePercentage = 0;
+                    float lastChange = 0;
+                    foreach (Stock stock in Stocks)
+                    {
+                        averageChangePercentage += Math.Abs(stock.changePercent - lastChange);
+                        lastChange = stock.changePercent;
+                    }
+                    averageChangePercentage /= Stocks.Count;
+                    float change = (float)Math.Round(averageChangePercentage, 6);
+                    if (float.IsNaN(change))
+                    {
+                        change = 0;
+                    }
+                    CompanyChange cc = new CompanyChange(company.symbol.ToString(), company.name.ToString(), change);
+                    if (dbContext.CompanyChanges.Where(c => c.Symbol.Equals(company.symbol)).Count() == 0)
+                    {
+                        dbContext.CompanyChanges.Add(cc);
+                    }
+                    else
+                    {
+                        dbContext.CompanyChanges.Update(cc);
+                    }
+                    
+                    dbContext.SaveChangesAsync().Wait();
+                }
+                catch (Exception ex)
+                {
+                    var error = ex;
+                    Console.Write(error.Message, error.HelpLink);
+                }
+
             }
-            
-            dbContext.SaveChanges();
+           
+
             IEXHandler webHandler = new IEXHandler();
             List<Stock> stocks = webHandler.GetChart("A", "1m");
             CompaniesStocks companiesStocks = getCompaniesStocksModel(stocks);
